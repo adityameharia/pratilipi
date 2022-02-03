@@ -4,18 +4,96 @@
         "contact": {}
     },
     "paths": {
-        "/ping": {
-            "get": {
-                "description": "returns pong on ping",
+        "/like/:userId/:bookId": {
+            "post": {
+                "description": "takes the userId and bookId from the parameters. Validates if the user exists and then adds the book to the list of books the user has liked",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "illustrates ping examples",
-                "responses": {}
+                "tags": [
+                    "AddLike"
+                ],
+                "summary": "likes a book for the particular user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Book ID",
+                        "name": "bookId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.resp"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/main.resp"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/main.resp"
+                        }
+                    }
+                }
             }
+        },
+        "/signup": {
+            "post": {
+                "description": "takes the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "signup"
+                ],
+                "summary": "used to signup a new user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.resp"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/main.resp"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/main.resp"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.resp": {
+            "type": "object"
         }
     }
 }

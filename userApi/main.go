@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	docs "github.com/adityameharia/pratilipi/userApi/docs"
+	"github.com/adityameharia/pratilipi/userApi/docs"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -22,6 +22,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	docs.SwaggerInfo.Title = "UserAPI"
+	docs.SwaggerInfo.Description = "This server responds to the userApi requests"
+
 }
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -42,8 +45,8 @@ func main() {
 	}()
 	r := gin.Default()
 	docs.SwaggerInfo.BasePath = "/"
-	r.POST("/like/:userId/:bookId", addLike)
-	r.POST("/signup", signup)
+	r.POST("/signup", Signup)
+	r.POST("/like/:userId/:bookId", AddLike)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run(os.Getenv("PORT")) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

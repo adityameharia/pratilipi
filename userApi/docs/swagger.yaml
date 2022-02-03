@@ -1,13 +1,67 @@
+definitions:
+  main.resp:
+    type: object
 info:
   contact: {}
 paths:
-  /ping:
-    get:
+  /like/:userId/:bookId:
+    post:
       consumes:
       - application/json
-      description: returns pong on ping
+      description: takes the userId and bookId from the parameters. Validates if the
+        user exists and then adds the book to the list of books the user has liked
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Book ID
+        in: path
+        name: bookId
+        required: true
+        type: string
       produces:
       - application/json
-      responses: {}
-      summary: illustrates ping examples
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.resp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.resp'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/main.resp'
+      summary: likes a book for the particular user
+      tags:
+      - AddLike
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: takes the email id password, verifies if the email already exist
+        in the database, if it doesnt exist then it creates a new user and returns
+        an automatically generated userId
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.resp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.resp'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/main.resp'
+      summary: used to signup a new user
+      tags:
+      - signup
 swagger: "2.0"

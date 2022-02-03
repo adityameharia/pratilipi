@@ -23,6 +23,10 @@ type response struct {
 	Password string             `json:"password" binding:"required"`
 }
 
+type resp struct {
+	message string `json:"message" example:"Testing"`
+}
+
 func isValidEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil

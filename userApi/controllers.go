@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -11,14 +12,17 @@ import (
 	"net/http"
 )
 
-// @BasePath /
-// Ping-example godoc
-// @Summary illustrates ping examples
-// @Description returns pong on ping
-// @Accept json
-// @Produce json
-// @Router /ping [get]
-func signup(c *gin.Context) {
+// Signup godoc
+// @Summary     used to signup a new user
+// @Description  takes the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId
+// @Tags         signup
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} resp
+// @Failure      401  {object} resp
+// @Failure      502  {object} resp
+// @Router       /signup [post]
+func Signup(c *gin.Context) {
 	var orgPassword string
 	var body userdata
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -75,7 +79,19 @@ func signup(c *gin.Context) {
 	return
 }
 
-func addLike(c *gin.Context) {
+// AddLike godoc
+// @Summary     likes a book for the particular user
+// @Description  takes the userId and bookId from the parameters. Validates if the user exists and then adds the book to the list of books the user has liked
+// @Tags         AddLike
+// @Accept       json
+// @Produce      json
+// @Param        userId  path  string  true  "User ID"
+// @Param        bookId  path  string  true  "Book ID"
+// @Success      200  {object} resp
+// @Failure      401  {object} resp
+// @Failure      502  {object} resp
+// @Router       /like/:userId/:bookId [post]
+func AddLike(c *gin.Context) {
 	if !validateUser(c.Param("userId")) {
 		c.JSON(401, gin.H{
 			"message": "Invalid UserId",
