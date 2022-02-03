@@ -1,0 +1,13 @@
+info:
+  contact: {}
+paths:
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: returns pong on ping
+      produces:
+      - application/json
+      responses: {}
+      summary: illustrates ping examples
+swagger: "2.0"
