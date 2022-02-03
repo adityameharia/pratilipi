@@ -42,8 +42,8 @@ func main() {
 	}()
 	r := gin.Default()
 	docs.SwaggerInfo.BasePath = "/"
-	r.GET("/validateUser", validateUser)
-	r.GET("/signup", signup)
+	r.POST("/like/:userId/:bookId", addLike)
+	r.POST("/signup", signup)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run(os.Getenv("PORT")) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

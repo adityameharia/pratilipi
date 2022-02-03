@@ -9,64 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
-	"net/mail"
-	"time"
-	"unicode"
 )
-
-type userdata struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type response struct {
-	Id       primitive.ObjectID `bson:"_id, omitempty"`
-	Email    string             `json:"email" binding:"required"`
-	Password string             `json:"password" binding:"required"`
-}
-
-func isValidEmail(email string) bool {
-	_, err := mail.ParseAddress(email)
-	return err == nil
-}
-
-func isValidPassword(s string) bool {
-	var (
-		hasMinLen  = false
-		hasUpper   = false
-		hasLower   = false
-		hasNumber  = false
-		hasSpecial = false
-	)
-	if len(s) >= 10 {
-		hasMinLen = true
-	}
-	for _, char := range s {
-		switch {
-		case unicode.IsUpper(char):
-			hasUpper = true
-		case unicode.IsLower(char):
-			hasLower = true
-		case unicode.IsNumber(char):
-			hasNumber = true
-		case unicode.IsPunct(char) || unicode.IsSymbol(char):
-			hasSpecial = true
-		}
-	}
-	return hasMinLen && hasUpper && hasLower && hasNumber && hasSpecial
-}
-
-func comparePasswords(hashedPwd string, plainPwd []byte) bool {
-	byteHash := []byte(hashedPwd)
-	err := bcrypt.CompareHashAndPassword(byteHash, plainPwd)
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-
-	return true
-
-}
 
 // @BasePath /
 // Ping-example godoc
@@ -76,11 +19,14 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 // @Produce json
 // @Router /ping [get]
 func signup(c *gin.Context) {
+	var orgPassword string
 	var body userdata
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	orgPassword = body.Password
+	body.Liked = make([]string, 0)
 	if !isValidEmail(body.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email address"})
 		return
@@ -94,13 +40,14 @@ func signup(c *gin.Context) {
 		log.Println(err)
 	}
 	hashedPwd := string(hash)
-	user := bson.D{{"email", body.Email}, {"password", hashedPwd}}
+	body.Password = hashedPwd
+	//user := bson.D{{"email", body.Email}, {"password", hashedPwd}, {"likedBooks", bson.A{}}}
 
 	filter := bson.D{primitive.E{Key: "email", Value: body.Email}}
 	var resp response
 	err = collection.FindOne(context.TODO(), filter).Decode(&resp)
 	if err != nil {
-		result, err := collection.InsertOne(context.TODO(), user)
+		result, err := collection.InsertOne(context.TODO(), body)
 		// check for errors in the insertion
 		if err != nil {
 			c.JSON(502, gin.H{
@@ -114,7 +61,7 @@ func signup(c *gin.Context) {
 		return
 	}
 	if err == nil {
-		if comparePasswords(resp.Password, []byte(body.Password)) {
+		if comparePasswords(resp.Password, []byte(orgPassword)) {
 			fmt.Println(resp)
 			c.JSON(200, gin.H{
 				"id": resp.Id,
@@ -128,9 +75,32 @@ func signup(c *gin.Context) {
 	return
 }
 
-func validateUser(c *gin.Context) {
-	time.Sleep(10 * time.Second)
+func addLike(c *gin.Context) {
+	if !validateUser(c.Param("userId")) {
+		c.JSON(401, gin.H{
+			"message": "Invalid UserId",
+		})
+		return
+	}
+	obId, err := primitive.ObjectIDFromHex(c.Param("userId"))
+	if err != nil {
+		c.JSON(401, gin.H{
+			"message": "Invalid UserId",
+		})
+		return
+	}
+	filter := bson.D{primitive.E{Key: "_id", Value: obId}}
+
+	update := bson.M{"$push": bson.M{"liked": c.Param("bookId")}}
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		c.JSON(502, gin.H{
+			"message": "Unable to update your likes",
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"message": "pong",
+		"message": "Liked Updated",
 	})
+	return
 }
