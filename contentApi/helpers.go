@@ -1,23 +1,84 @@
 package main
 
 import (
+	"context"
 	"encoding/csv"
+	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
-	"log"
-	"os"
+	"mime/multipart"
 )
 
-func readCsvFile(filePath string) [][]string {
-	f, err := os.Open(filePath)
+type Content struct {
+	Title string `json:"title" binding:"required"`
+	Story string `json:"story" binding:"required"`
+	Date  string `json:"date" binding:"required"`
+	Likes int    `json:"likes"`
+}
+
+type Response struct {
+	Id    primitive.ObjectID `bson:"_id"`
+	Title string             `bson:"title"`
+	Story string             `bson:"story"`
+	Date  string             `bson:"date"`
+	Likes int                `bson:"likes"`
+}
+
+func readCsvFileAndUpdate(form *multipart.FileHeader) error {
+	f, err := form.Open()
 	if err != nil {
-		log.Fatal("Unable to read input file "+filePath, err)
+		fmt.Println("Unable to read input file ", err)
+		return err
 	}
 	defer f.Close()
-	var records [][]string
+	var r Content
 	csvReader := csv.NewReader(f)
 
+	//the following code can be used to replicate transaction so that if theres a error in the file then the transaction gets aborted
+	//err = db.Client().UseSession(context.TODO(), func(sessionContext mongo.SessionContext) error {
+	//	err := sessionContext.StartTransaction()
+	//	var record []string
+	//	if err != nil {
+	//		sessionContext.AbortTransaction(sessionContext)
+	//		return err
+	//	}
+	//	for {
+	//		record, err = csvReader.Read()
+	//
+	//		if err == io.EOF {
+	//			break
+	//		}
+	//
+	//		if err != nil {
+	//			break
+	//		}
+	//
+	//		r.Title = record[0]
+	//		r.Story = record[1]
+	//		r.Date = record[2]
+	//		r.Likes = 0
+	//		_, err = collection.InsertOne(sessionContext, r)
+	//		if err != nil {
+	//			break
+	//		}
+	//	}
+	//	if err != nil {
+	//		fmt.Println("test")
+	//		fmt.Println(err)
+	//		sessionContext.AbortTransaction(sessionContext)
+	//		return err
+	//	} else {
+	//		fmt.Println("test2")
+	//		fmt.Println(err)
+	//		err = sessionContext.CommitTransaction(sessionContext)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	}
+	//	sessionContext.EndSession(sessionContext)
+	//	return nil
+	//})
 	for {
-
 		record, err := csvReader.Read()
 
 		if err == io.EOF {
@@ -25,14 +86,17 @@ func readCsvFile(filePath string) [][]string {
 		}
 
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
-		records = append(records, record)
+		r.Title = record[0]
+		r.Story = record[1]
+		r.Date = record[2]
+		r.Likes = 0
+		_, err = collection.InsertOne(context.TODO(), r)
+		if err != nil {
+			return err
+		}
 	}
-	if err != nil {
-		log.Fatal("Unable to parse file as CSV for "+filePath, err)
-	}
-
-	return records
+	return nil
 }

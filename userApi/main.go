@@ -24,7 +24,6 @@ func init() {
 	}
 	docs.SwaggerInfo.Title = "UserAPI"
 	docs.SwaggerInfo.Description = "This server responds to the userApi requests"
-
 }
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
