@@ -40,6 +40,6 @@ func main() {
 	}
 	r := gin.Default()
 	r.POST("/csv", readCSV)
-	r.GET("/getmostliked", getMostLciked)
+	r.GET("/getmostliked", getMostLiked)
 	r.Run(os.Getenv("PORT"))
 }
