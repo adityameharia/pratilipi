@@ -39,8 +39,9 @@ func main() {
 		fmt.Println(err)
 	}
 	r := gin.Default()
-	r.POST("/csv", readCSV)
-	r.GET("/getmostliked", getMostLiked)
-	r.GET("/books/:pageno", getBooks)
+	r.Use(ValidateUser)
+	r.POST("/csv/:userid", readCSV)
+	r.GET("/getmostliked/:userid", getMostLiked)
+	r.GET("/books/:userid/:pageno", getBooks)
 	r.Run(os.Getenv("PORT"))
 }

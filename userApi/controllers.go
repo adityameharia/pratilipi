@@ -120,3 +120,16 @@ func AddLike(c *gin.Context) {
 	})
 	return
 }
+
+func ValidateUserRoute(c *gin.Context) {
+	if !validateUser(c.Param("userId")) {
+		c.JSON(401, gin.H{
+			"message": "Invalid UserId",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "valid UserId",
+	})
+	return
+}

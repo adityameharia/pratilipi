@@ -71,7 +71,7 @@ func getBooks(c *gin.Context) {
 			"message": "Invalid Page Number",
 		})
 	}
-	opts := options.Find().SetSkip(pgno * 10).SetLimit(10)
+	opts := options.Find().SetSkip((pgno - 1) * 10).SetLimit(10)
 	cur, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
 		fmt.Println(err)
