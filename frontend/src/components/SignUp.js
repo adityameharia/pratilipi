@@ -13,21 +13,43 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import axios from 'axios'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 export default function Signup() {
-  const [user, setUser] = useState({ email: '', password: '' })
+  const [user, setUser] = useState({ email: "", password: "" })
 
   const onChange = (e) => {
     setUser({ ...user, [e.target.id]: e.target.value });
-    console.log(user)
   };
 
   const onSubmit = async (e) => {
     e.preventDefault()
+    console.log(user)
+
+    axios.post("http://localhost:8000/signup", user, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(res => {
+      localStorage.setItem('userid', res.data.data.id)
+      console.log(res.data)
+      window.location.reload();
+    }).catch(err => {
+      console.log(err)
+      console.log("hi")
+      if (err.response.status == 400) {
+        alert("Invalid email or password")
+      } else if (err.response.status == 401) {
+        alert("User is already registered but the password you are entering is wrong")
+      } else {
+        alert("Internal Server Error")
+      }
+    })
+
   };
 
-  function validateEmail(str){
+  function validateEmail(str) {
     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(str)
   }
@@ -67,7 +89,6 @@ export default function Signup() {
       minH={'90vh'}
       align={'center'}
       justify={'center'}
-      onSubmit={onSubmit}
       bg={useColorModeValue('gray.50', 'gray.800')}>
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
@@ -130,13 +151,13 @@ export default function Signup() {
                 size="lg"
                 bg={'blue.400'}
                 color={'white'}
+                onClick={onSubmit}
                 _hover={{
                   bg: 'blue.500',
                 }}>
                 Sign up
               </Button>
             </Stack>
-
           </Stack>
         </Box>
       </Stack>

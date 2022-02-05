@@ -32,7 +32,6 @@ export default function Books() {
         pagesCount,
         pages
     } = usePagination({
-        // pagesCount: 200,
         total: 60,
         initialState: { currentPage: 1, pageSize: 5 },
         limits: {

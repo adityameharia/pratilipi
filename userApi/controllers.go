@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"log"
-	"net/http"
 )
 
 // Signup godoc
@@ -26,17 +26,18 @@ func Signup(c *gin.Context) {
 	var orgPassword string
 	var body userdata
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		fmt.Println(err)
+		c.Writer.WriteHeader(400)
 		return
 	}
 	orgPassword = body.Password
 	body.Liked = make([]string, 0)
 	if !isValidEmail(body.Email) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email address"})
+		c.Writer.WriteHeader(400)
 		return
 	}
-	if isValidPassword(body.Password) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
+	if !isValidPassword(body.Password) {
+		c.Writer.WriteHeader(400)
 		return
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.MinCost)
@@ -54,13 +55,18 @@ func Signup(c *gin.Context) {
 		result, err := collection.InsertOne(context.TODO(), body)
 		// check for errors in the insertion
 		if err != nil {
-			c.JSON(502, gin.H{
-				"message": "Unable to add email and password to database",
+			c.Writer.WriteHeader(502)
+			return
+		}
+		err = collection.FindOne(context.TODO(), bson.D{{"_id", result.InsertedID}}).Decode(&resp)
+		if err != nil {
+			c.JSON(401, gin.H{
+				"message": "Invalid UserId",
 			})
 			return
 		}
 		c.JSON(200, gin.H{
-			"id": result.InsertedID,
+			"data": resp,
 		})
 		return
 	}
@@ -68,12 +74,10 @@ func Signup(c *gin.Context) {
 		if comparePasswords(resp.Password, []byte(orgPassword)) {
 			fmt.Println(resp)
 			c.JSON(200, gin.H{
-				"id": resp.Id,
+				"data": resp,
 			})
 		} else {
-			c.JSON(401, gin.H{
-				"message": "The email Id you have entered has already been registered and the password you are entering is wrong",
-			})
+			c.Writer.WriteHeader(401)
 		}
 	}
 	return
@@ -92,9 +96,16 @@ func Signup(c *gin.Context) {
 // @Failure      502  {object} resp
 // @Router       /like/:userId/:bookId [post]
 func AddLike(c *gin.Context) {
-	if !validateUser(c.Param("userId")) {
+	_, err := FindUser(c.Param("userId"))
+	if err == mongo.ErrNoDocuments {
 		c.JSON(401, gin.H{
 			"message": "Invalid UserId",
+		})
+		return
+	}
+	if err != nil {
+		c.JSON(502, gin.H{
+			"message": "Internal Server Error",
 		})
 		return
 	}
@@ -121,15 +132,22 @@ func AddLike(c *gin.Context) {
 	return
 }
 
-func ValidateUserRoute(c *gin.Context) {
-	if !validateUser(c.Param("userId")) {
+func FindUserRoute(c *gin.Context) {
+	resp, err := FindUser(c.Param("userId"))
+	if err == mongo.ErrNoDocuments {
 		c.JSON(401, gin.H{
 			"message": "Invalid UserId",
 		})
 		return
 	}
+	if err != nil {
+		c.JSON(502, gin.H{
+			"message": "Internal Server Error",
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"message": "valid UserId",
+		"message": resp,
 	})
 	return
 }
