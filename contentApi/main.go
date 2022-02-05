@@ -39,7 +39,7 @@ func main() {
 		fmt.Println(err)
 	}
 	r := gin.Default()
-	r.Use(ValidateUser)
+	r.Use(CORSMiddleware())
 	r.POST("/csv/:userid", readCSV)
 	r.GET("/getmostliked/:userid", getMostLiked)
 	r.GET("/books/:userid/:pageno", getBooks)
