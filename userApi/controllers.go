@@ -4,23 +4,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 )
 
 // Signup godoc
 // @Summary     used to signup a new user
-// @Description  takes the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId
+// @Description   the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId
 // @Tags         signup
 // @Accept       json
 // @Produce      json
-// @Success      200  {object} resp
-// @Failure      401  {object} resp
-// @Failure      502  {object} resp
+// @Success      200  {object} RespSuccessSignUp
+// @Param user body userdata true "get data"
 // @Router       /signup [post]
 func Signup(c *gin.Context) {
 	var orgPassword string
@@ -48,6 +46,7 @@ func Signup(c *gin.Context) {
 	body.Password = hashedPwd
 	filter := bson.D{primitive.E{Key: "email", Value: body.Email}}
 	var resp response
+	var successResp RespSuccessSignUp
 	err = collection.FindOne(context.TODO(), filter).Decode(&resp)
 	if err != nil {
 		result, err := collection.InsertOne(context.TODO(), body)
@@ -56,17 +55,15 @@ func Signup(c *gin.Context) {
 			c.Writer.WriteHeader(502)
 			return
 		}
-
-		c.JSON(200, gin.H{
-			"id": result.InsertedID,
-		})
+		successResp.Id = result.InsertedID.(primitive.ObjectID).Hex()
+		fmt.Println(successResp.Id)
+		c.JSON(200, successResp)
 		return
 	}
 	if err == nil {
 		if comparePasswords(resp.Password, []byte(orgPassword)) {
-			c.JSON(200, gin.H{
-				"id": resp.Id,
-			})
+			successResp.Id = resp.Id.Hex()
+			c.JSON(200, successResp)
 		} else {
 			c.Writer.WriteHeader(401)
 		}
@@ -74,25 +71,37 @@ func Signup(c *gin.Context) {
 	return
 }
 
+// Like godoc
+// @Summary     used to signup a new user
+// @Description   the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId
+// @Tags         signup
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} RespSuccess
+// @Failure      401 {object} RespError
+// @Failure      502 {object} RespError
+// @Param userid path string true "userid"
+// @Param bookid path string true "bookid"
+// @Param cmd path string true "add or remove command"
+// @Router       /like/{cmd}/{userid}/{bookid} [get]
 func Like(c *gin.Context) {
+	var errorResp RespError
+	var successResp RespSuccess
 	_, err := FindUser(c.Param("userId"))
+	errorResp.Message = "Invalid UserId"
 	if err == mongo.ErrNoDocuments {
-		c.JSON(401, gin.H{
-			"message": "Invalid UserId",
-		})
+		c.JSON(401, errorResp)
 		return
 	}
+	errorResp.Message = "Internal Server Error"
 	if err != nil {
-		c.JSON(502, gin.H{
-			"message": "Internal Server Error",
-		})
+		c.JSON(401, errorResp)
 		return
 	}
+	errorResp.Message = "Invalid UserId"
 	obId, err := primitive.ObjectIDFromHex(c.Param("userId"))
 	if err != nil {
-		c.JSON(401, gin.H{
-			"message": "Invalid UserId",
-		})
+		c.JSON(401, errorResp)
 		return
 	}
 	filter := bson.D{primitive.E{Key: "_id", Value: obId}}
@@ -104,33 +113,41 @@ func Like(c *gin.Context) {
 	}
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		c.JSON(502, gin.H{
-			"message": "Unable to update your likes",
-		})
+		errorResp.Message = "Unable to update your likes"
+		c.JSON(502, errorResp)
 		return
 	}
-	c.JSON(200, gin.H{
-		"message": "Liked Updated",
-	})
+	successResp.Message = "Liked Updated"
+	c.JSON(200, successResp)
 	return
 }
 
+// FindUserRoute godoc
+// @Summary     used to signup a new user
+// @Description   the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId
+// @Tags         signup
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} RespSuccessFind
+// @Failure      401 {object} RespError
+// @Failure      502 {object} RespError
+// @Param userid path string true "userid"
+// @Router       /find/{userid} [get]
 func FindUserRoute(c *gin.Context) {
+	var errorResp RespError
+	var successResp RespSuccessFind
 	resp, err := FindUser(c.Param("userId"))
+	errorResp.Message = "Invalid UserId"
 	if err == mongo.ErrNoDocuments {
-		c.JSON(401, gin.H{
-			"message": "Invalid UserId",
-		})
+		c.JSON(401, errorResp)
 		return
 	}
 	if err != nil {
-		c.JSON(502, gin.H{
-			"message": "Internal Server Error",
-		})
+		errorResp.Message = "Internal Server Error"
+		c.JSON(502, errorResp)
 		return
 	}
-	c.JSON(200, gin.H{
-		"message": resp,
-	})
+	successResp.Message = resp
+	c.JSON(200, successResp)
 	return
 }

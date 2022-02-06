@@ -1,24 +1,82 @@
 definitions:
-  main.resp:
+  main.RespError:
+    properties:
+      message:
+        example: Error
+        type: string
+    required:
+    - message
+    type: object
+  main.RespSuccess:
+    properties:
+      message:
+        example: Data Updated Successfully
+        type: string
+    required:
+    - message
+    type: object
+  main.RespSuccessFind:
+    properties:
+      message:
+        $ref: '#/definitions/main.responseFind'
+    required:
+    - message
+    type: object
+  main.RespSuccessSignUp:
+    properties:
+      id:
+        example: 507c7f79bcf86cd7994f6c0e
+        type: string
+    required:
+    - id
+    type: object
+  main.responseFind:
+    properties:
+      email:
+        example: adi@gmail.com
+        type: string
+      id:
+        example: 507c7f79bcf86cd7994f6c0e
+        type: string
+      liked:
+        example:
+        - '[507f1f77bcf86cd799439011'
+        - 507f1f77bcf86cd799439011]
+        items:
+          type: string
+        type: array
+    required:
+    - email
+    - liked
+    type: object
+  main.userdata:
+    properties:
+      email:
+        type: string
+      liked:
+        items:
+          type: string
+        type: array
+      password:
+        type: string
+    required:
+    - email
+    - password
     type: object
 info:
   contact: {}
 paths:
-  /like/:userId/:bookId:
-    post:
+  /find/{userid}:
+    get:
       consumes:
       - application/json
-      description: takes the userId and bookId from the parameters. Validates if the
-        user exists and then adds the book to the list of books the user has liked
+      description: the email id password, verifies if the email already exist in the
+        database, if it doesnt exist then it creates a new user and returns an automatically
+        generated userId
       parameters:
-      - description: User ID
+      - description: userid
         in: path
-        name: userId
-        required: true
-        type: string
-      - description: Book ID
-        in: path
-        name: bookId
+        name: userid
         required: true
         type: string
       produces:
@@ -27,40 +85,80 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.resp'
+            $ref: '#/definitions/main.RespSuccessFind'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/main.resp'
+            $ref: '#/definitions/main.RespError'
         "502":
           description: Bad Gateway
           schema:
-            $ref: '#/definitions/main.resp'
-      summary: likes a book for the particular user
+            $ref: '#/definitions/main.RespError'
+      summary: used to signup a new user
       tags:
-      - AddLike
+      - signup
+  /like/{cmd}/{userid}/{bookid}:
+    get:
+      consumes:
+      - application/json
+      description: the email id password, verifies if the email already exist in the
+        database, if it doesnt exist then it creates a new user and returns an automatically
+        generated userId
+      parameters:
+      - description: userid
+        in: path
+        name: userid
+        required: true
+        type: string
+      - description: bookid
+        in: path
+        name: bookid
+        required: true
+        type: string
+      - description: add or remove command
+        in: path
+        name: cmd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespSuccess'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.RespError'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/main.RespError'
+      summary: used to signup a new user
+      tags:
+      - signup
   /signup:
     post:
       consumes:
       - application/json
-      description: takes the email id password, verifies if the email already exist
-        in the database, if it doesnt exist then it creates a new user and returns
-        an automatically generated userId
+      description: the email id password, verifies if the email already exist in the
+        database, if it doesnt exist then it creates a new user and returns an automatically
+        generated userId
+      parameters:
+      - description: get data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.userdata'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.resp'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/main.resp'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/main.resp'
+            $ref: '#/definitions/main.RespSuccessSignUp'
       summary: used to signup a new user
       tags:
       - signup

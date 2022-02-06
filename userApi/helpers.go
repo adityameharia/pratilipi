@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/mail"
@@ -15,14 +16,36 @@ import (
 type userdata struct {
 	Email    string   `json:"email" binding:"required"`
 	Password string   `json:"password" binding:"required"`
-	Liked    []string `json:"liked"`
+	Liked    []string `json:"liked" example:""`
 }
 
 type response struct {
-	Id       primitive.ObjectID `bson:"_id, omitempty"`
-	Email    string             `json:"email" binding:"required"`
-	Password string             `json:"password" binding:"required"`
+	Id       primitive.ObjectID `bson:"_id, omitempty" example:"507c7f79bcf86cd7994f6c0e"`
+	Email    string             `json:"email" binding:"required" example:"adi@gmail.com"`
+	Password string             `json:"password" binding:"required" example:""`
 	Liked    []string           `json:"liked" binding:"required"`
+}
+
+type RespError struct {
+	Message string `json:"message" binding:"required" example:"Error"`
+}
+
+type RespSuccess struct {
+	Message string `json:"message" binding:"required" example:"Data Updated Successfully"`
+}
+
+type responseFind struct {
+	Id    primitive.ObjectID `bson:"_id, omitempty" example:"507c7f79bcf86cd7994f6c0e"`
+	Email string             `json:"email" binding:"required" example:"adi@gmail.com"`
+	Liked []string           `json:"liked" binding:"required" example:"[507f1f77bcf86cd799439011,507f1f77bcf86cd799439011]"`
+}
+
+type RespSuccessFind struct {
+	Message responseFind `json:"message" binding:"required"`
+}
+
+type RespSuccessSignUp struct {
+	Id string `json:"id" binding:"required" example:"507c7f79bcf86cd7994f6c0e"`
 }
 
 func isValidEmail(email string) bool {
@@ -68,17 +91,18 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 
 }
 
-func FindUser(id string) (response, error) {
-	var resp response
+func FindUser(id string) (responseFind, error) {
+	var resp responseFind
 	obId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		fmt.Println(err)
-		return response{}, err
+		return responseFind{}, err
 	}
-	err = collection.FindOne(context.TODO(), bson.D{{"_id", obId}}).Decode(&resp)
+	opts := options.FindOne().SetProjection(bson.D{{"password", 0}})
+	err = collection.FindOne(context.TODO(), bson.D{{"_id", obId}}, opts).Decode(&resp)
 	if err != nil {
 		fmt.Println(err)
-		return response{}, err
+		return responseFind{}, err
 	}
 	return resp, nil
 }

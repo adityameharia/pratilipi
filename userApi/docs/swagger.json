@@ -4,60 +4,9 @@
         "contact": {}
     },
     "paths": {
-        "/like/:userId/:bookId": {
-            "post": {
-                "description": "takes the userId and bookId from the parameters. Validates if the user exists and then adds the book to the list of books the user has liked",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AddLike"
-                ],
-                "summary": "likes a book for the particular user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Book ID",
-                        "name": "bookId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/main.resp"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/main.resp"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/main.resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/signup": {
-            "post": {
-                "description": "takes the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId",
+        "/find/{userid}": {
+            "get": {
+                "description": "the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId",
                 "consumes": [
                     "application/json"
                 ],
@@ -68,23 +17,124 @@
                     "signup"
                 ],
                 "summary": "used to signup a new user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userid",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.resp"
+                            "$ref": "#/definitions/main.RespSuccessFind"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/main.resp"
+                            "$ref": "#/definitions/main.RespError"
                         }
                     },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
-                            "$ref": "#/definitions/main.resp"
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    }
+                }
+            }
+        },
+        "/like/{cmd}/{userid}/{bookid}": {
+            "get": {
+                "description": "the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "signup"
+                ],
+                "summary": "used to signup a new user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userid",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "bookid",
+                        "name": "bookid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "add or remove command",
+                        "name": "cmd",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespSuccess"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "signup"
+                ],
+                "summary": "used to signup a new user",
+                "parameters": [
+                    {
+                        "description": "get data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.userdata"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespSuccessSignUp"
                         }
                     }
                 }
@@ -92,8 +142,100 @@
         }
     },
     "definitions": {
-        "main.resp": {
-            "type": "object"
+        "main.RespError": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Error"
+                }
+            }
+        },
+        "main.RespSuccess": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Data Updated Successfully"
+                }
+            }
+        },
+        "main.RespSuccessFind": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "$ref": "#/definitions/main.responseFind"
+                }
+            }
+        },
+        "main.RespSuccessSignUp": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "507c7f79bcf86cd7994f6c0e"
+                }
+            }
+        },
+        "main.responseFind": {
+            "type": "object",
+            "required": [
+                "email",
+                "liked"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "adi@gmail.com"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "507c7f79bcf86cd7994f6c0e"
+                },
+                "liked": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[507f1f77bcf86cd799439011",
+                        "507f1f77bcf86cd799439011]"
+                    ]
+                }
+            }
+        },
+        "main.userdata": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "liked": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
         }
     }
 }
