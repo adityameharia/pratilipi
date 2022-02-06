@@ -125,6 +125,43 @@ func AddLike(c *gin.Context) {
 	return
 }
 
+func RemoveLike(c *gin.Context) {
+	_, err := FindUser(c.Param("userId"))
+	if err == mongo.ErrNoDocuments {
+		c.JSON(401, gin.H{
+			"message": "Invalid UserId",
+		})
+		return
+	}
+	if err != nil {
+		c.JSON(502, gin.H{
+			"message": "Internal Server Error",
+		})
+		return
+	}
+	obId, err := primitive.ObjectIDFromHex(c.Param("userId"))
+	if err != nil {
+		c.JSON(401, gin.H{
+			"message": "Invalid UserId",
+		})
+		return
+	}
+	filter := bson.D{primitive.E{Key: "_id", Value: obId}}
+
+	update := bson.M{"$pull": bson.M{"liked": c.Param("bookId")}}
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		c.JSON(502, gin.H{
+			"message": "Unable to update your likes",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Liked Updated",
+	})
+	return
+}
+
 func FindUserRoute(c *gin.Context) {
 	resp, err := FindUser(c.Param("userId"))
 	if err == mongo.ErrNoDocuments {

@@ -1,7 +1,6 @@
 import {
     Box,
     Heading,
-    Link,
     Text,
     HStack,
     Icon,
@@ -18,20 +17,18 @@ import {
     useDisclosure
 } from '@chakra-ui/react';
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import axios from 'axios';
 export default function Card({ callbackLike, id, title, likes, date, story, liked }) {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
-    const onClick = () => {
-        console.log("test")
-    }
     const onLike = async () => {
         try {
             await axios.post("http://localhost:8001/like/" + localStorage.getItem("userid") + "/" + id)
+            callbackLike(id, liked)
         } catch (err) {
-
+            alert("Unable to update likes")
         }
     }
     return (
@@ -57,7 +54,6 @@ export default function Card({ callbackLike, id, title, likes, date, story, like
                     <Spacer />
                     <Button bg="white" onClick={() => {
                         onLike()
-                        callbackLike(id)
                     }}>
                         {liked ? <Icon as={AiFillHeart} color="red.500" boxSize={6} /> : <Icon as={AiOutlineHeart} boxSize={6} />}
                     </Button>
@@ -82,10 +78,13 @@ export default function Card({ callbackLike, id, title, likes, date, story, like
 
                             <Text textAlign={'left'}>{date}</Text>
                             <Spacer />
-                            <Box p="0px" m="0px" bg="white" onClick={onLike}>
+                            <Button bg="white" onClick={() => {
+                                onLike()
+                                callbackLike(id, liked)
+                            }}>
                                 {liked ? <Icon as={AiFillHeart} color="red.500" boxSize={6} /> : <Icon as={AiOutlineHeart} boxSize={6} />}
-                            </Box>
-                            <Text>{likes}</Text>
+                            </Button>
+                            <Text marginLeft={'2'}>{likes}</Text>
 
                         </ModalFooter>
                     </ModalContent>

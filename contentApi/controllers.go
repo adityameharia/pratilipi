@@ -109,15 +109,14 @@ func Like(c *gin.Context) {
 	fmt.Println("hi")
 	user, _ := c.Get("user")
 	userData, _ := user.(Mess)
+	obId, err := primitive.ObjectIDFromHex(c.Param("bookid"))
+	if err != nil {
+		c.JSON(401, gin.H{
+			"message": "Invalid UserId",
+		})
+		return
+	}
 	if !Find(userData.Message.Liked, c.Param("bookid")) {
-		obId, err := primitive.ObjectIDFromHex(c.Param("bookid"))
-		if err != nil {
-			c.JSON(401, gin.H{
-				"message": "Invalid UserId",
-			})
-			return
-		}
-		fmt.Println(obId)
 		update := bson.M{"$inc": bson.M{"likes": 1}}
 		value, err := collection.UpdateOne(context.TODO(), bson.D{{"_id", obId}}, update)
 		if err != nil {
@@ -128,6 +127,29 @@ func Like(c *gin.Context) {
 		}
 		fmt.Println(value.MatchedCount)
 		url := "http://localhost:8000/addlike/" + c.Param("userid") + "/" + c.Param("bookid")
+		_, err = http.Get(url)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(502, gin.H{
+				"message": "Unable to update your likes",
+			})
+			return
+		}
+		c.JSON(200, gin.H{
+			"message": "Liked Updated",
+		})
+		return
+	} else {
+		update := bson.M{"$inc": bson.M{"likes": -1}}
+		value, err := collection.UpdateOne(context.TODO(), bson.D{{"_id", obId}}, update)
+		if err != nil {
+			c.JSON(502, gin.H{
+				"message": "Unable to update your likes",
+			})
+			return
+		}
+		fmt.Println(value.MatchedCount)
+		url := "http://localhost:8000/removelike/" + c.Param("userid") + "/" + c.Param("bookid")
 		_, err = http.Get(url)
 		if err != nil {
 			fmt.Println(err)

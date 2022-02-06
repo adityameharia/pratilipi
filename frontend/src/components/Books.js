@@ -1,16 +1,12 @@
 import {
     Box,
     Heading,
-    Link,
-    Text,
-    Flex,
+    Spinner,
     SimpleGrid,
     Center,
-    Button,
-    Spacer
 } from '@chakra-ui/react';
 import Card from './Card'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import {useCallback, useEffect, useState } from 'react';
 import Navbar from './Navbar';
 import {
     Pagination,
@@ -29,6 +25,7 @@ export default function Books() {
     const [topcon, setTopcon] = useState(false)
     const [books, setBooks] = useState([])
     const [totalPage, setTotalPage] = useState(0)
+    const [loading, setLoading] = useState(true)
     const {
         currentPage,
         setCurrentPage,
@@ -46,7 +43,8 @@ export default function Books() {
     useEffect(() => {
         async function fetchData() {
             try {
-                if (topcon == false) {
+                setLoading(true)
+                if (topcon === false) {
                     let resp = await axios.get("http://localhost:8001/books/" + localStorage.getItem('userid') + "/" + currentPage)
                     setBooks(resp.data.books.data)
                     setTotalPage(resp.data.books.count)
@@ -54,7 +52,9 @@ export default function Books() {
                     let resp = await axios.get("http://localhost:8001/getmostliked/" + localStorage.getItem('userid'))
                     setBooks(resp.data.mostLiked)
                 }
+                setLoading(false)
             } catch (err) {
+                setLoading(false)
                 if (!err.response) {
                     alert("Network Error")
                 } else {
@@ -76,18 +76,31 @@ export default function Books() {
         setTopcon(topcon)
     }, [])
 
-    const callbackLike = useCallback((id) => { 
-        console.log(id)       
-        let index=books.findIndex((ele)=>ele.id==id)
-        console.log(index)
-        books[index].likes++
-        books[index].liked=true
+    const callbackLike = useCallback((id, liked) => {
+        let index = books.findIndex((ele) => ele.id === id)
+        let newarr = [...books]
+        if (liked) {
+            newarr[index].likes--
+            newarr[index].liked = false
+            setBooks(newarr)
+        } else {
+            newarr[index].likes++
+            newarr[index].liked = true
+            setBooks(newarr)
+        }
     }, [books])
 
     return (
         <>
             <Navbar callbackTopCon={callbackTopCon} />
-            <Box marginTop="5vh"
+            {loading ? <Center><Spinner
+                m={'5'}
+                thickness='4px'
+                speed='0.65s'
+                emptyColor='gray.200'
+                color='blue.500'
+                size='xl'
+            /></Center> : <Box marginTop="5vh"
                 marginLeft="15vw"
                 marginRight="15vw">
                 <Box>
@@ -151,8 +164,7 @@ export default function Books() {
                         </PaginationContainer>
                     </Pagination>
                 </Center>}
-            </Box>
-
+            </Box>}
         </>
     )
 
