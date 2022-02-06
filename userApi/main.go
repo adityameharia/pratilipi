@@ -46,7 +46,6 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/"
 	r.Use(CORSMiddleware())
 	r.POST("/signup", Signup)
-	//r.GET("/addlike/:userId/:bookId", AddLike)
 	r.GET("/like/:cmd/:userId/:bookId", Like)
 	r.GET("/find/:userId", FindUserRoute)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
