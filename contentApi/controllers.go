@@ -26,7 +26,7 @@ func readCSV(c *gin.Context) {
 		})
 		return
 	}
-	err = readCsvFileAndUpdate(file)
+	count, err = readCsvFileAndUpdate(file)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
@@ -40,7 +40,7 @@ func readCSV(c *gin.Context) {
 
 func getMostLiked(c *gin.Context) {
 	sort := bson.D{{"likes", -1}}
-	opts := options.Find().SetSort(sort).SetLimit(10)
+	opts := options.Find().SetSort(sort).SetLimit(9)
 	cur, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
 		fmt.Println(err)
@@ -49,16 +49,19 @@ func getMostLiked(c *gin.Context) {
 		})
 		return
 	}
-	var resp []Response
-	if err = cur.All(context.TODO(), &resp); err != nil {
+	var res []Response
+	if err = cur.All(context.TODO(), &res); err != nil {
 		fmt.Println(err)
 		c.JSON(502, gin.H{
 			"message": "Unable to access database",
 		})
 		return
 	}
+	user, _ := c.Get("user")
+	field, _ := user.(Mess)
+	fillLiked(&res, field)
 	c.JSON(200, gin.H{
-		"mostLiked": resp,
+		"mostLiked": res,
 	})
 	return
 }
@@ -71,7 +74,7 @@ func getBooks(c *gin.Context) {
 			"message": "Invalid Page Number",
 		})
 	}
-	opts := options.Find().SetSkip((pgno - 1) * 10).SetLimit(10)
+	opts := options.Find().SetSkip((pgno - 1) * 10).SetLimit(9)
 	cur, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
 		fmt.Println(err)
@@ -88,8 +91,21 @@ func getBooks(c *gin.Context) {
 		})
 		return
 	}
+
+	user, _ := c.Get("user")
+	field, _ := user.(Mess)
+	fillLiked(&resp, field)
+	var respWCount ResponseWithCount
+	respWCount.Count = count
+	respWCount.Response = resp
 	c.JSON(200, gin.H{
-		"books": resp,
+		"books": respWCount,
 	})
 	return
+}
+
+func Like(c *gin.Context) {
+	//user, _ := c.Get("user")
+	//field, _ := user.(Mess)
+
 }

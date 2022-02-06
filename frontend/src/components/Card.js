@@ -51,7 +51,7 @@ export default function Card({ title, likes, date, story, liked }) {
                     <Text>{date}</Text>
                     <Spacer />
                     <Button bg="white" onClick={onLike}>
-                        <Icon as={AiOutlineHeart} boxSize={6} />
+                        {liked ? <Icon as={AiFillHeart} color="red.500" boxSize={6} /> : <Icon as={AiOutlineHeart} boxSize={6} />}
                     </Button>
                     <Text>{likes}</Text>
                 </HStack>
@@ -74,9 +74,9 @@ export default function Card({ title, likes, date, story, liked }) {
 
                             <Text textAlign={'left'}>{date}</Text>
                             <Spacer />
-                            <Button bg="white" onClick={onLike}>
-                                <Icon as={AiOutlineHeart} boxSize={6} />
-                            </Button>
+                            <Box p="0px" m="0px" bg="white" onClick={onLike}>
+                                {liked ? <Icon as={AiFillHeart} color="red.500" boxSize={6} /> : <Icon as={AiOutlineHeart} boxSize={6} />}
+                            </Box>
                             <Text>{likes}</Text>
 
                         </ModalFooter>

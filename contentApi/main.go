@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"os"
@@ -13,6 +14,7 @@ import (
 
 var collection *mongo.Collection
 var db *mongo.Database
+var count int64
 
 func init() {
 	err := godotenv.Load()
@@ -34,13 +36,15 @@ func main() {
 	db = client.Database(os.Getenv("DATABASE"))
 	defer db.Client().Disconnect(ctx)
 	collection = db.Collection(os.Getenv("COLLECTION"))
-
+	count, err = collection.CountDocuments(context.TODO(), bson.D{})
 	if err != nil {
 		fmt.Println(err)
 	}
 	r := gin.Default()
 	r.Use(CORSMiddleware())
+	r.Use(ValidateUser())
 	r.POST("/csv/:userid", readCSV)
+	r.POST("/like/:userid/:bookid", Like)
 	r.GET("/getmostliked/:userid", getMostLiked)
 	r.GET("/books/:userid/:pageno", getBooks)
 	r.Run(os.Getenv("PORT"))

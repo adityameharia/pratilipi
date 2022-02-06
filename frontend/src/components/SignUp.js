@@ -32,12 +32,10 @@ export default function Signup() {
         "Content-Type": "application/json"
       }
     }).then(res => {
-      localStorage.setItem('userid', res.data.data.id)
+      localStorage.setItem('userid', res.data.id)
       console.log(res.data)
       window.location.reload();
     }).catch(err => {
-      console.log(err)
-      console.log("hi")
       if (err.response.status == 400) {
         alert("Invalid email or password")
       } else if (err.response.status == 401) {

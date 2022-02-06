@@ -32,6 +32,7 @@ func Signup(c *gin.Context) {
 	}
 	orgPassword = body.Password
 	body.Liked = make([]string, 0)
+	body.Liked = append(body.Liked, "61ff66fa02cd037ea1ea0bc3")
 	if !isValidEmail(body.Email) {
 		c.Writer.WriteHeader(400)
 		return
@@ -46,8 +47,6 @@ func Signup(c *gin.Context) {
 	}
 	hashedPwd := string(hash)
 	body.Password = hashedPwd
-	//user := bson.D{{"email", body.Email}, {"password", hashedPwd}, {"likedBooks", bson.A{}}}
-
 	filter := bson.D{primitive.E{Key: "email", Value: body.Email}}
 	var resp response
 	err = collection.FindOne(context.TODO(), filter).Decode(&resp)
@@ -58,15 +57,9 @@ func Signup(c *gin.Context) {
 			c.Writer.WriteHeader(502)
 			return
 		}
-		err = collection.FindOne(context.TODO(), bson.D{{"_id", result.InsertedID}}).Decode(&resp)
-		if err != nil {
-			c.JSON(401, gin.H{
-				"message": "Invalid UserId",
-			})
-			return
-		}
+
 		c.JSON(200, gin.H{
-			"data": resp,
+			"id": result.InsertedID,
 		})
 		return
 	}
@@ -74,7 +67,7 @@ func Signup(c *gin.Context) {
 		if comparePasswords(resp.Password, []byte(orgPassword)) {
 			fmt.Println(resp)
 			c.JSON(200, gin.H{
-				"data": resp,
+				"id": resp.Id,
 			})
 		} else {
 			c.Writer.WriteHeader(401)

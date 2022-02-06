@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
 	"mime/multipart"
@@ -18,34 +18,35 @@ type Content struct {
 }
 
 type Response struct {
-	Id    primitive.ObjectID `bson:"_id"`
-	Title string             `bson:"title"`
-	Story string             `bson:"story"`
-	Date  string             `bson:"date"`
-	Likes int                `bson:"likes"`
+	Id    primitive.ObjectID `json:"id" bson:"_id"`
+	Title string             `json:"title" bson:"title"`
+	Story string             `json:"story" bson:"story"`
+	Date  string             `json:"date" bson:"date"`
+	Likes int                `json:"likes" bson:"likes"`
+	Liked bool               `json:"liked" bson:"liked"`
+	Count int64              `json:"count" bson:"count"`
 }
 
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-
-		c.Next()
-	}
+type ResponseWithCount struct {
+	Response []Response `json:"data"`
+	Count    int64      `json:"count"`
 }
 
-func readCsvFileAndUpdate(form *multipart.FileHeader) error {
+type Userdata struct {
+	Id       string   `json:"Id" binding:"required"`
+	Email    string   `json:"email" binding:"required"`
+	Password string   `json:"password" binding:"required"`
+	Liked    []string `json:"liked" binding:"required"`
+}
+type Mess struct {
+	Message Userdata `json:"message" binding:"required"`
+}
+
+func readCsvFileAndUpdate(form *multipart.FileHeader) (int64, error) {
 	f, err := form.Open()
 	if err != nil {
 		fmt.Println("Unable to read input file ", err)
-		return err
+		return count, err
 	}
 	defer f.Close()
 	var r Content
@@ -103,7 +104,7 @@ func readCsvFileAndUpdate(form *multipart.FileHeader) error {
 		}
 
 		if err != nil {
-			return err
+			return count, err
 		}
 
 		r.Title = record[0]
@@ -112,8 +113,30 @@ func readCsvFileAndUpdate(form *multipart.FileHeader) error {
 		r.Likes = 0
 		_, err = collection.InsertOne(context.TODO(), r)
 		if err != nil {
-			return err
+			return count, err
 		}
 	}
-	return nil
+	count, err := collection.CountDocuments(context.TODO(), bson.D{})
+	return count, nil
+}
+
+func fillLiked(resp *[]Response, field Mess) {
+	fmt.Println("test call")
+	fmt.Println(field.Message.Id)
+	fmt.Println(field.Message.Liked)
+	for i, r := range *resp {
+		(*resp)[i].Liked = Find(field.Message.Liked, primitive.ObjectID.Hex(r.Id))
+	}
+
+}
+
+func Find(slice []string, val string) bool {
+	//fmt.Println(val)
+	for _, item := range slice {
+		if item == val {
+			fmt.Println("testinng if matched")
+			return true
+		}
+	}
+	return false
 }
