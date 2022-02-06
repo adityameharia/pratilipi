@@ -44,7 +44,7 @@ func main() {
 	r.Use(CORSMiddleware())
 	r.Use(ValidateUser())
 	r.POST("/csv/:userid", readCSV)
-	r.POST("/like/:userid/:bookid", Like)
+	r.POST("/like/:cmd/:userid/:bookid", Like)
 	r.GET("/getmostliked/:userid", getMostLiked)
 	r.GET("/books/:userid/:pageno", getBooks)
 	r.Run(os.Getenv("PORT"))

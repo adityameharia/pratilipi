@@ -38,7 +38,7 @@ type Userdata struct {
 	Password string   `json:"password" binding:"required"`
 	Liked    []string `json:"liked" binding:"required"`
 }
-type Mess struct {
+type UserApiResponse struct {
 	Message Userdata `json:"message" binding:"required"`
 }
 
@@ -120,10 +120,7 @@ func readCsvFileAndUpdate(form *multipart.FileHeader) (int64, error) {
 	return count, nil
 }
 
-func fillLiked(resp *[]Response, field Mess) {
-	fmt.Println("test call")
-	fmt.Println(field.Message.Id)
-	fmt.Println(field.Message.Liked)
+func fillLiked(resp *[]Response, field UserApiResponse) {
 	for i, r := range *resp {
 		(*resp)[i].Liked = Find(field.Message.Liked, primitive.ObjectID.Hex(r.Id))
 	}
@@ -131,10 +128,8 @@ func fillLiked(resp *[]Response, field Mess) {
 }
 
 func Find(slice []string, val string) bool {
-	//fmt.Println(val)
 	for _, item := range slice {
 		if item == val {
-			fmt.Println("testinng if matched")
 			return true
 		}
 	}

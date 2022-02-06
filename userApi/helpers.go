@@ -25,10 +25,6 @@ type response struct {
 	Liked    []string           `json:"liked" binding:"required"`
 }
 
-type resp struct {
-	message string `json:"message" example:"Testing"`
-}
-
 func isValidEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
@@ -73,7 +69,6 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 }
 
 func FindUser(id string) (response, error) {
-	fmt.Println(id)
 	var resp response
 	obId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

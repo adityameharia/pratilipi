@@ -13,7 +13,6 @@ func ValidateUser() gin.HandlerFunc {
 		resp, err := http.Get(url)
 		if err != nil {
 			fmt.Println(err)
-			fmt.Println("test2")
 			c.AbortWithStatusJSON(502, gin.H{
 				"message": "Internal Server Error",
 			})
@@ -26,7 +25,7 @@ func ValidateUser() gin.HandlerFunc {
 			return
 		}
 		defer resp.Body.Close()
-		var user Mess
+		var user UserApiResponse
 		json.NewDecoder(resp.Body).Decode(&user)
 		c.Set("user", user)
 		c.Next()

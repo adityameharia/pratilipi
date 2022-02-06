@@ -32,7 +32,6 @@ func Signup(c *gin.Context) {
 	}
 	orgPassword = body.Password
 	body.Liked = make([]string, 0)
-	body.Liked = append(body.Liked, "61ff66fa02cd037ea1ea0bc3")
 	if !isValidEmail(body.Email) {
 		c.Writer.WriteHeader(400)
 		return
@@ -65,7 +64,6 @@ func Signup(c *gin.Context) {
 	}
 	if err == nil {
 		if comparePasswords(resp.Password, []byte(orgPassword)) {
-			fmt.Println(resp)
 			c.JSON(200, gin.H{
 				"id": resp.Id,
 			})
@@ -76,19 +74,7 @@ func Signup(c *gin.Context) {
 	return
 }
 
-// AddLike godoc
-// @Summary     likes a book for the particular user
-// @Description  takes the userId and bookId from the parameters. Validates if the user exists and then adds the book to the list of books the user has liked
-// @Tags         AddLike
-// @Accept       json
-// @Produce      json
-// @Param        userId  path  string  true  "User ID"
-// @Param        bookId  path  string  true  "Book ID"
-// @Success      200  {object} resp
-// @Failure      401  {object} resp
-// @Failure      502  {object} resp
-// @Router       /like/:userId/:bookId [post]
-func AddLike(c *gin.Context) {
+func Like(c *gin.Context) {
 	_, err := FindUser(c.Param("userId"))
 	if err == mongo.ErrNoDocuments {
 		c.JSON(401, gin.H{
@@ -110,45 +96,12 @@ func AddLike(c *gin.Context) {
 		return
 	}
 	filter := bson.D{primitive.E{Key: "_id", Value: obId}}
-
-	update := bson.M{"$push": bson.M{"liked": c.Param("bookId")}}
-	_, err = collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		c.JSON(502, gin.H{
-			"message": "Unable to update your likes",
-		})
-		return
+	var update bson.M
+	if c.Param("cmd") == "remove" {
+		update = bson.M{"$pull": bson.M{"liked": c.Param("bookId")}}
+	} else {
+		update = bson.M{"$push": bson.M{"liked": c.Param("bookId")}}
 	}
-	c.JSON(200, gin.H{
-		"message": "Liked Updated",
-	})
-	return
-}
-
-func RemoveLike(c *gin.Context) {
-	_, err := FindUser(c.Param("userId"))
-	if err == mongo.ErrNoDocuments {
-		c.JSON(401, gin.H{
-			"message": "Invalid UserId",
-		})
-		return
-	}
-	if err != nil {
-		c.JSON(502, gin.H{
-			"message": "Internal Server Error",
-		})
-		return
-	}
-	obId, err := primitive.ObjectIDFromHex(c.Param("userId"))
-	if err != nil {
-		c.JSON(401, gin.H{
-			"message": "Invalid UserId",
-		})
-		return
-	}
-	filter := bson.D{primitive.E{Key: "_id", Value: obId}}
-
-	update := bson.M{"$pull": bson.M{"liked": c.Param("bookId")}}
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		c.JSON(502, gin.H{

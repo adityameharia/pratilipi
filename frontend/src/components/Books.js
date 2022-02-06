@@ -106,13 +106,13 @@ export default function Books() {
                 <Box>
                     {!topcon ?
                         <Center>
-                            <Heading as="h1" marginLeft="3vw">
+                            <Heading as="h2">
                                 Some Books By Us
                             </Heading>
                         </Center> :
                         <Center>
-                            <Heading as="h1" marginLeft="3vw">
-                                Top Books by us
+                            <Heading as="h2">
+                                Top Books By Us
                             </Heading>
                         </Center>}
                     <br />
