@@ -55,7 +55,6 @@ export default function Books() {
                     setBooks(resp.data.mostLiked)
                 }
             } catch (err) {
-                console.log("error screen")
                 if (!err.response) {
                     alert("Network Error")
                 } else {
