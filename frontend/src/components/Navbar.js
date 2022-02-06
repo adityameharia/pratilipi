@@ -1,6 +1,6 @@
 import {Box,Spacer,Text,Flex,Button} from '@chakra-ui/react'
 import {useState } from 'react';
-export default function Navbar({callback}){
+export default function Navbar({callbackTopCon}){
     const [topcon, setTopcon] = useState(false);
     return(
         <Box bg="gray.100" p={2}>
@@ -9,7 +9,7 @@ export default function Navbar({callback}){
             <Spacer/>
             <Button marginRight="5vw" colorScheme="blue" variant={topcon?'solid':'outline'} onClick={()=>{
                 setTopcon(!topcon)
-                callback(!topcon)
+                callbackTopCon(!topcon)
             }}>Top contents</Button>
             </Flex>
         </Box>

@@ -19,15 +19,20 @@ import {
 } from '@chakra-ui/react';
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
-export default function Card({ title, likes, date, story, liked }) {
+import axios from 'axios';
+export default function Card({ callbackLike, id, title, likes, date, story, liked }) {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
     const onClick = () => {
         console.log("test")
     }
-    const onLike = () => {
-        console.log("dont know")
+    const onLike = async () => {
+        try {
+            await axios.post("http://localhost:8001/like/" + localStorage.getItem("userid") + "/" + id)
+        } catch (err) {
+
+        }
     }
     return (
         <Center>
@@ -50,7 +55,10 @@ export default function Card({ title, likes, date, story, liked }) {
                 <HStack>
                     <Text>{date}</Text>
                     <Spacer />
-                    <Button bg="white" onClick={onLike}>
+                    <Button bg="white" onClick={() => {
+                        onLike()
+                        callbackLike(id)
+                    }}>
                         {liked ? <Icon as={AiFillHeart} color="red.500" boxSize={6} /> : <Icon as={AiOutlineHeart} boxSize={6} />}
                     </Button>
                     <Text>{likes}</Text>

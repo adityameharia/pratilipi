@@ -14,7 +14,7 @@ type Content struct {
 	Title string `json:"title" binding:"required"`
 	Story string `json:"story" binding:"required"`
 	Date  string `json:"date" binding:"required"`
-	Likes int    `json:"likes"`
+	Likes int64  `json:"likes"`
 }
 
 type Response struct {

@@ -72,17 +72,21 @@ export default function Books() {
         fetchData()
     }, [currentPage, topcon])
 
-    const callback = useCallback((topcon) => {
-        console.log(currentPage)
+    const callbackTopCon = useCallback((topcon) => {
         setTopcon(topcon)
-        console.log(topcon)
     }, [])
 
-
+    const callbackLike = useCallback((id) => { 
+        console.log(id)       
+        let index=books.findIndex((ele)=>ele.id==id)
+        console.log(index)
+        books[index].likes++
+        books[index].liked=true
+    }, [books])
 
     return (
         <>
-            <Navbar callback={callback} />
+            <Navbar callbackTopCon={callbackTopCon} />
             <Box marginTop="5vh"
                 marginLeft="15vw"
                 marginRight="15vw">
@@ -106,6 +110,8 @@ export default function Books() {
                         justifyContent="center">
                         {books?.map((b) => (
                             <Card key={b.id}
+                                callbackLike={callbackLike}
+                                id={b.id}
                                 title={b.title}
                                 likes={b.likes}
                                 date={b.date}

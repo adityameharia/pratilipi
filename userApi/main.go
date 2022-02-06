@@ -46,7 +46,7 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/"
 	r.Use(CORSMiddleware())
 	r.POST("/signup", Signup)
-	r.POST("/like/:userId/:bookId", AddLike)
+	r.GET("/addlike/:userId/:bookId", AddLike)
 	r.GET("/find/:userId", FindUserRoute)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run(os.Getenv("PORT")) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
