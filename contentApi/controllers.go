@@ -12,31 +12,41 @@ import (
 	"strconv"
 )
 
+// ReadCSV godoc
+// @Summary     parse csv file and update data to the database
+// @Description  parse csv file and update data to the database
+// @Tags         csv
+// @Accept 		multipart/form-data
+// @Produce      json
+// @Success      200  {object} RespSuccess
+// @Failure      400 {object} RespError
+// @Failure      502 {object} RespError
+// @Param userid path string true "userid"
+// @Param file formData file true "file"
+// @Router       /csv/{userid} [post]
 func ReadCSV(c *gin.Context) {
+	var errorResp RespError
+	var successResp RespSuccess
+	errorResp.Message = "No file is received"
 	file, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "No file is received",
-		})
+		c.JSON(http.StatusBadRequest, errorResp)
 		return
 	}
 	extension := filepath.Ext(file.Filename)
+	errorResp.Message = "File Extension not available"
 	if extension != ".csv" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "File Extension not available",
-		})
+		c.JSON(http.StatusBadRequest, errorResp)
 		return
 	}
 	count, err = readCsvFileAndUpdate(file)
+	errorResp.Message = err.Error()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, errorResp)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Data added successfully",
-	})
+	successResp.Message = "Data added successfully"
+	c.JSON(http.StatusOK, successResp)
 }
 
 // GetMostLiked godoc

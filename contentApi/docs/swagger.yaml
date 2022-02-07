@@ -93,6 +93,40 @@ paths:
       summary: finds and returns books
       tags:
       - Books
+  /csv/{userid}:
+    post:
+      consumes:
+      - multipart/form-data
+      description: parse csv file and update data to the database
+      parameters:
+      - description: userid
+        in: path
+        name: userid
+        required: true
+        type: string
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.RespError'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/main.RespError'
+      summary: parse csv file and update data to the database
+      tags:
+      - csv
   /getmostliked/{userid}:
     get:
       description: finds and returns top content on the basis of number of likes
@@ -117,7 +151,7 @@ paths:
       tags:
       - TopContent
   /like/{cmd}/{userid}/{bookid}:
-    get:
+    post:
       description: Takes the add/remove command from url and updates the like for
         the respective user
       parameters:

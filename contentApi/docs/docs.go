@@ -58,6 +58,57 @@ const docTemplate_swagger = `{
                 }
             }
         },
+        "/csv/{userid}": {
+            "post": {
+                "description": "parse csv file and update data to the database",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "csv"
+                ],
+                "summary": "parse csv file and update data to the database",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userid",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    }
+                }
+            }
+        },
         "/getmostliked/{userid}": {
             "get": {
                 "description": "finds and returns top content on the basis of number of likes",
@@ -94,7 +145,7 @@ const docTemplate_swagger = `{
             }
         },
         "/like/{cmd}/{userid}/{bookid}": {
-            "get": {
+            "post": {
                 "description": "Takes the add/remove command from url and updates the like for the respective user",
                 "produces": [
                     "application/json"

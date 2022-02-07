@@ -24,7 +24,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	docs.SwaggerInfo_swagger.Title = "ContentAPI"
+	docs.SwaggerInfo_swagger.Title = "Content API"
 	docs.SwaggerInfo_swagger.Description = "This server responds to the contentApi requests"
 }
 func main() {
