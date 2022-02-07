@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -165,7 +166,7 @@ func Like(c *gin.Context) {
 		c.JSON(502, errorResp)
 		return
 	}
-	url = "http://localhost:8000/like/" + c.Param("cmd") + "/" + c.Param("userid") + "/" + c.Param("bookid")
+	url = os.Getenv("USERURL") + "/" + c.Param("cmd") + "/" + c.Param("userid") + "/" + c.Param("bookid")
 	_, err = http.Get(url)
 	if err != nil {
 		fmt.Println(err)

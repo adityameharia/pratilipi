@@ -6,7 +6,11 @@ WORKDIR /project
 
 RUN npm i
 
-ENV REACT_APP_USER_URL=${userurl}
+ARG userurl
+
+ARG contenturl
+
+ENV REACT_APP_USER_URL=$userurl
 
 ENV REACT_APP_CONTENT_URL=${contenturl}
 

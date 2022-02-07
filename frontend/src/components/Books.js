@@ -42,16 +42,17 @@ export default function Books() {
 
     useEffect(() => {
         async function fetchData() {
-            console.log(process.env.REACT_APP_CONTENT_URL)
             try {
                 setLoading(true)
                 if (topcon === false) {
                     let resp = await axios.get(process.env.REACT_APP_CONTENT_URL+"/books/" + localStorage.getItem('userid') + "/" + currentPage)
-                    setBooks(resp.data.books.data)
+                    convertDate(resp.data.books.data)
                     setTotalPage(resp.data.books.count)
+                    convertDate(resp.data.books.data)
                 } else {
-                    let resp = await axios.get(process.env.REACT_APP_CONTENT_URL+"/getmostliked/" + localStorage.getItem('userid'))
+                    let resp = await axios.get(process.env.REACT_APP_CONTENT_URL + "/getmostliked/" + localStorage.getItem('userid'))
                     setBooks(resp.data.mostLiked)
+                    convertDate(resp.data.mostLiked)
                 }
                 setLoading(false)
             } catch (err) {
@@ -72,6 +73,14 @@ export default function Books() {
         }
         fetchData()
     }, [currentPage, topcon,totalPage])
+
+    const convertDate=(bookArray)=>{
+        bookArray?.forEach((ele)=>{
+            let date=new Date(ele.date)
+            ele.date=(date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear()
+        })
+        setBooks(bookArray)
+    }
 
     const callbackTopCon = useCallback((topcon) => {
         setTopcon(topcon)

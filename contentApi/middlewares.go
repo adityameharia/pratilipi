@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 )
 
 func ValidateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		url := "http://localhost:8000/find/" + c.Param("userid")
+		url := os.Getenv("USERURL") + "/find/" + c.Param("userid")
 		resp, err := http.Get(url)
 		if err != nil {
 			fmt.Println(err)

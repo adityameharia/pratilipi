@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	docs "github.com/adityameharia/pratilipi/userApi/docs"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -27,6 +28,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	clientOps := options.Client().ApplyURI(os.Getenv("MONGO_URI"))
+	fmt.Println(os.Getenv("MONGO_URI"))
 	client, err := mongo.Connect(ctx, clientOps)
 	if err != nil {
 		panic(err)

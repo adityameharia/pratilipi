@@ -65,6 +65,10 @@ func readCsvFileAndUpdate(form *multipart.FileHeader) (int64, error) {
 	defer f.Close()
 	var r Content
 	csvReader := csv.NewReader(f)
+	_, err = csvReader.Read()
+	if err != nil {
+		return count, err
+	}
 
 	//the following code can be used to replicate transaction so that if theres a error in the file then the transaction gets aborted
 	//err = db.Client().UseSession(context.TODO(), func(sessionContext mongo.SessionContext) error {
