@@ -26,9 +26,9 @@ export default function Card({ callbackLike, id, title, likes, date, story, like
     const onLike = async () => {
         try {
             if (liked) {
-                await axios.post("http://localhost:8001/like/remove/" + localStorage.getItem("userid") + "/" + id)
+                await axios.post(process.env.REACT_APP_CONTENT_URL+"/like/remove/" + localStorage.getItem("userid") + "/" + id)
             } else {
-                await axios.post("http://localhost:8001/like/add/" + localStorage.getItem("userid") + "/" + id)
+                await axios.post(process.env.REACT_APP_CONTENT_URL+"/like/add/" + localStorage.getItem("userid") + "/" + id)
             }
             callbackLike(id, liked)
         } catch (err) {

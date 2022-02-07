@@ -105,7 +105,7 @@ func GetBooks(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errorResp)
 	}
 	pgno := int64(i)
-	opts := options.Find().SetSkip((pgno - 1) * 10).SetLimit(9)
+	opts := options.Find().SetSkip((pgno - 1) * 9).SetLimit(9)
 	cur, err := collection.Find(context.TODO(), bson.D{}, opts)
 	errorResp.Message = "Unable to access database"
 	if err != nil {

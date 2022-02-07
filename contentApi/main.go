@@ -5,7 +5,6 @@ import (
 	"fmt"
 	docs "github.com/adityameharia/pratilipi/contentApi/docs"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,10 +19,10 @@ var db *mongo.Database
 var count int64
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
+	//err := godotenv.Load()
+	//if err != nil {
+	//	panic(err)
+	//}
 	docs.SwaggerInfo_swagger.Title = "Content API"
 	docs.SwaggerInfo_swagger.Description = "This server responds to the contentApi requests"
 }
@@ -50,5 +49,5 @@ func main() {
 	r.GET("/getmostliked/:userid", ValidateUser(), GetMostLiked)
 	r.GET("/books/:userid/:pageno", ValidateUser(), GetBooks)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	r.Run(os.Getenv("PORT"))
+	r.Run(":" + os.Getenv("PORT"))
 }

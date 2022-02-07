@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/adityameharia/pratilipi/userApi/docs"
+	docs "github.com/adityameharia/pratilipi/userApi/docs"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,10 +16,10 @@ import (
 var collection *mongo.Collection
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
+	//err := godotenv.Load()
+	//if err != nil {
+	//	panic(err)
+	//}
 	docs.SwaggerInfo_swagger.Title = "User API"
 	docs.SwaggerInfo_swagger.Description = "This server responds to the user Api requests"
 }
@@ -48,5 +47,5 @@ func main() {
 	r.GET("/like/:cmd/:userId/:bookId", Like)
 	r.GET("/find/:userId", FindUserRoute)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	r.Run(os.Getenv("PORT")) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run(":" + os.Getenv("PORT")) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

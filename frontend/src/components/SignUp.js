@@ -27,7 +27,7 @@ export default function Signup() {
     e.preventDefault()
     console.log(user)
 
-    axios.post("http://localhost:8000/signup", user, {
+    axios.post(process.env.REACT_APP_USER_URL+"/signup", user, {
       headers: {
         "Content-Type": "application/json"
       }

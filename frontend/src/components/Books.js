@@ -42,14 +42,15 @@ export default function Books() {
 
     useEffect(() => {
         async function fetchData() {
+            console.log(process.env.REACT_APP_CONTENT_URL)
             try {
                 setLoading(true)
                 if (topcon === false) {
-                    let resp = await axios.get("http://localhost:8001/books/" + localStorage.getItem('userid') + "/" + currentPage)
+                    let resp = await axios.get(process.env.REACT_APP_CONTENT_URL+"/books/" + localStorage.getItem('userid') + "/" + currentPage)
                     setBooks(resp.data.books.data)
                     setTotalPage(resp.data.books.count)
                 } else {
-                    let resp = await axios.get("http://localhost:8001/getmostliked/" + localStorage.getItem('userid'))
+                    let resp = await axios.get(process.env.REACT_APP_CONTENT_URL+"/getmostliked/" + localStorage.getItem('userid'))
                     setBooks(resp.data.mostLiked)
                 }
                 setLoading(false)
@@ -70,7 +71,7 @@ export default function Books() {
 
         }
         fetchData()
-    }, [currentPage, topcon])
+    }, [currentPage, topcon,totalPage])
 
     const callbackTopCon = useCallback((topcon) => {
         setTopcon(topcon)
