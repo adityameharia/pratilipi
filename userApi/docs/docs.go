@@ -132,7 +132,7 @@ const docTemplate_swagger = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.userdata"
+                            "$ref": "#/definitions/main.signUpBodySwagger"
                         }
                     }
                 ],
@@ -222,7 +222,7 @@ const docTemplate_swagger = `{
                 }
             }
         },
-        "main.userdata": {
+        "main.signUpBodySwagger": {
             "type": "object",
             "required": [
                 "email",
@@ -230,19 +230,12 @@ const docTemplate_swagger = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string"
-                },
-                "liked": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        ""
-                    ]
+                    "type": "string",
+                    "example": "adityameh@gmail.com"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Qwert@009"
                 }
             }
         }

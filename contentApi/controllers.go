@@ -40,13 +40,15 @@ func ReadCSV(c *gin.Context) {
 		return
 	}
 	count, err = readCsvFileAndUpdate(file)
-	errorResp.Message = err.Error()
 	if err != nil {
+		errorResp.Message = err.Error()
 		c.JSON(http.StatusBadRequest, errorResp)
 		return
 	}
 	successResp.Message = "Data added successfully"
-	c.JSON(http.StatusOK, successResp)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Data added successfully",
+	})
 }
 
 // GetMostLiked godoc

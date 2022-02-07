@@ -16,7 +16,12 @@ import (
 type userdata struct {
 	Email    string   `json:"email" binding:"required"`
 	Password string   `json:"password" binding:"required"`
-	Liked    []string `json:"liked" example:""`
+	Liked    []string `json:"liked" example:[]`
+}
+
+type signUpBodySwagger struct {
+	Email    string `json:"email" binding:"required" example:"adityameh@gmail.com"`
+	Password string `json:"password" binding:"required" example:"Qwert@009"`
 }
 
 type response struct {

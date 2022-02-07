@@ -18,7 +18,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Success      200  {object} RespSuccessSignUp
-// @Param user body userdata true "get data"
+// @Param user body signUpBodySwagger true "get data"
 // @Router       /signup [post]
 func Signup(c *gin.Context) {
 	var orgPassword string
@@ -34,6 +34,7 @@ func Signup(c *gin.Context) {
 		c.Writer.WriteHeader(400)
 		return
 	}
+	fmt.Println(body.Password)
 	if !isValidPassword(body.Password) {
 		c.Writer.WriteHeader(400)
 		return

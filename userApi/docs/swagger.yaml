@@ -49,17 +49,13 @@ definitions:
     - email
     - liked
     type: object
-  main.userdata:
+  main.signUpBodySwagger:
     properties:
       email:
+        example: adityameh@gmail.com
         type: string
-      liked:
-        example:
-        - ""
-        items:
-          type: string
-        type: array
       password:
+        example: Qwert@009
         type: string
     required:
     - email
@@ -147,7 +143,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/main.userdata'
+          $ref: '#/definitions/main.signUpBodySwagger'
       produces:
       - application/json
       responses:
