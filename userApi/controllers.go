@@ -72,10 +72,9 @@ func Signup(c *gin.Context) {
 }
 
 // Like godoc
-// @Summary     used to signup a new user
-// @Description   the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId
-// @Tags         signup
-// @Accept       json
+// @Summary     Used to update like
+// @Description  Takes the add/remove command from url and updates the like for the respective user
+// @Tags         like
 // @Produce      json
 // @Success      200  {object} RespSuccess
 // @Failure      401 {object} RespError
@@ -123,10 +122,9 @@ func Like(c *gin.Context) {
 }
 
 // FindUserRoute godoc
-// @Summary     used to signup a new user
-// @Description   the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId
-// @Tags         signup
-// @Accept       json
+// @Summary     used to find a user with the given user id
+// @Description   used to find a user with the given user id.It returns the entire user document without the hashed password
+// @Tags         findUser
 // @Produce      json
 // @Success      200  {object} RespSuccessFind
 // @Failure      401 {object} RespError

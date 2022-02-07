@@ -18,18 +18,32 @@ type Content struct {
 }
 
 type Response struct {
-	Id    primitive.ObjectID `json:"id" bson:"_id"`
-	Title string             `json:"title" bson:"title"`
-	Story string             `json:"story" bson:"story"`
-	Date  string             `json:"date" bson:"date"`
-	Likes int                `json:"likes" bson:"likes"`
-	Liked bool               `json:"liked" bson:"liked"`
-	Count int64              `json:"count" bson:"count"`
+	Id    primitive.ObjectID `json:"id" bson:"_id" example:"507f191e810c19729de860ea"`
+	Title string             `json:"title" bson:"title" example:"Test Title"`
+	Story string             `json:"story" bson:"story" example:"Test Story"`
+	Date  string             `json:"date" bson:"date" example:"09/09/2001"`
+	Likes int                `json:"likes" bson:"likes" example:"10"`
+	Liked bool               `json:"liked" bson:"liked" example:"false"`
 }
 
 type ResponseWithCount struct {
 	Response []Response `json:"data"`
-	Count    int64      `json:"count"`
+	Count    int64      `json:"count" example:"20"`
+}
+
+type RespError struct {
+	Message string `json:"message" binding:"required" example:"Error"`
+}
+
+type RespSuccess struct {
+	Message string `json:"message" binding:"required" example:"Data Updated"`
+}
+
+type RespSuccessML struct {
+	MostLiked []Response `json:"mostLiked" binding:"required"`
+}
+type RespSuccessBooks struct {
+	Books ResponseWithCount `json:"books" binding:"required"`
 }
 
 type Userdata struct {

@@ -1,0 +1,235 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/books/{userid}/{pageno}": {
+            "get": {
+                "description": "finds and returns books",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "finds and returns books",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userid",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "pageno",
+                        "name": "pageno",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespSuccessBooks"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    }
+                }
+            }
+        },
+        "/getmostliked/{userid}": {
+            "get": {
+                "description": "finds and returns top content on the basis of number of likes",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TopContent"
+                ],
+                "summary": "finds and returns top content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userid",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespSuccessML"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    }
+                }
+            }
+        },
+        "/like/{cmd}/{userid}/{bookid}": {
+            "get": {
+                "description": "Takes the add/remove command from url and updates the like for the respective user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "like"
+                ],
+                "summary": "Used to update like",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userid",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "bookid",
+                        "name": "bookid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "add or remove command",
+                        "name": "cmd",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespSuccess"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.RespError": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Error"
+                }
+            }
+        },
+        "main.RespSuccess": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Data Updated"
+                }
+            }
+        },
+        "main.RespSuccessBooks": {
+            "type": "object",
+            "required": [
+                "books"
+            ],
+            "properties": {
+                "books": {
+                    "$ref": "#/definitions/main.ResponseWithCount"
+                }
+            }
+        },
+        "main.RespSuccessML": {
+            "type": "object",
+            "required": [
+                "mostLiked"
+            ],
+            "properties": {
+                "mostLiked": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.Response"
+                    }
+                }
+            }
+        },
+        "main.Response": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "example": "09/09/2001"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "507f191e810c19729de860ea"
+                },
+                "liked": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "likes": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "story": {
+                    "type": "string",
+                    "example": "Test Story"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Test Title"
+                }
+            }
+        },
+        "main.ResponseWithCount": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.Response"
+                    }
+                }
+            }
+        }
+    }
+}

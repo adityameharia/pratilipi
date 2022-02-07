@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	docs "github.com/adityameharia/pratilipi/contentApi/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -21,6 +24,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	docs.SwaggerInfo_swagger.Title = "ContentAPI"
+	docs.SwaggerInfo_swagger.Description = "This server responds to the contentApi requests"
 }
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -30,9 +35,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err == nil {
-		fmt.Println("successfully connected")
-	}
 	db = client.Database(os.Getenv("DATABASE"))
 	defer db.Client().Disconnect(ctx)
 	collection = db.Collection(os.Getenv("COLLECTION"))
@@ -41,11 +43,12 @@ func main() {
 		fmt.Println(err)
 	}
 	r := gin.Default()
+	//docs.SwaggerInfo_swagger.BasePath = "/"
 	r.Use(CORSMiddleware())
-	r.Use(ValidateUser())
-	r.POST("/csv/:userid", readCSV)
-	r.POST("/like/:cmd/:userid/:bookid", Like)
-	r.GET("/getmostliked/:userid", getMostLiked)
-	r.GET("/books/:userid/:pageno", getBooks)
+	r.POST("/csv/:userid", ValidateUser(), ReadCSV)
+	r.POST("/like/:cmd/:userid/:bookid", ValidateUser(), Like)
+	r.GET("/getmostliked/:userid", ValidateUser(), GetMostLiked)
+	r.GET("/books/:userid/:pageno", ValidateUser(), GetBooks)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run(os.Getenv("PORT"))
 }

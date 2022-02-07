@@ -1,0 +1,157 @@
+definitions:
+  main.RespError:
+    properties:
+      message:
+        example: Error
+        type: string
+    required:
+    - message
+    type: object
+  main.RespSuccess:
+    properties:
+      message:
+        example: Data Updated
+        type: string
+    required:
+    - message
+    type: object
+  main.RespSuccessBooks:
+    properties:
+      books:
+        $ref: '#/definitions/main.ResponseWithCount'
+    required:
+    - books
+    type: object
+  main.RespSuccessML:
+    properties:
+      mostLiked:
+        items:
+          $ref: '#/definitions/main.Response'
+        type: array
+    required:
+    - mostLiked
+    type: object
+  main.Response:
+    properties:
+      date:
+        example: 09/09/2001
+        type: string
+      id:
+        example: 507f191e810c19729de860ea
+        type: string
+      liked:
+        example: false
+        type: boolean
+      likes:
+        example: 10
+        type: integer
+      story:
+        example: Test Story
+        type: string
+      title:
+        example: Test Title
+        type: string
+    type: object
+  main.ResponseWithCount:
+    properties:
+      count:
+        example: 20
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/main.Response'
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /books/{userid}/{pageno}:
+    get:
+      description: finds and returns books
+      parameters:
+      - description: userid
+        in: path
+        name: userid
+        required: true
+        type: string
+      - description: pageno
+        in: path
+        name: pageno
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespSuccessBooks'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/main.RespError'
+      summary: finds and returns books
+      tags:
+      - Books
+  /getmostliked/{userid}:
+    get:
+      description: finds and returns top content on the basis of number of likes
+      parameters:
+      - description: userid
+        in: path
+        name: userid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespSuccessML'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/main.RespError'
+      summary: finds and returns top content
+      tags:
+      - TopContent
+  /like/{cmd}/{userid}/{bookid}:
+    get:
+      description: Takes the add/remove command from url and updates the like for
+        the respective user
+      parameters:
+      - description: userid
+        in: path
+        name: userid
+        required: true
+        type: string
+      - description: bookid
+        in: path
+        name: bookid
+        required: true
+        type: string
+      - description: add or remove command
+        in: path
+        name: cmd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespSuccess'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.RespError'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/main.RespError'
+      summary: Used to update like
+      tags:
+      - like
+swagger: "2.0"

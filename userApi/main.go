@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/joho/godotenv"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
 	"time"
 
@@ -26,15 +26,16 @@ func init() {
 	docs.SwaggerInfo.Description = "This server responds to the userApi requests"
 }
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	clientOps := options.Client().ApplyURI(os.Getenv("MONGO_URI"))
 	client, err := mongo.Connect(ctx, clientOps)
 	if err != nil {
 		panic(err)
 	}
-	if err == nil {
-		fmt.Println("successfully connected")
+	err = client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		panic(err)
 	}
 	collection = client.Database(os.Getenv("DATABASE")).Collection(os.Getenv("COLLECTION"))
 	defer func() {
