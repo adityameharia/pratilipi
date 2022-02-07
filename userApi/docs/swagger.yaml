@@ -54,6 +54,8 @@ definitions:
       email:
         type: string
       liked:
+        example:
+        - ""
         items:
           type: string
         type: array
@@ -68,11 +70,8 @@ info:
 paths:
   /find/{userid}:
     get:
-      consumes:
-      - application/json
-      description: the email id password, verifies if the email already exist in the
-        database, if it doesnt exist then it creates a new user and returns an automatically
-        generated userId
+      description: used to find a user with the given user id.It returns the entire
+        user document without the hashed password
       parameters:
       - description: userid
         in: path
@@ -94,16 +93,13 @@ paths:
           description: Bad Gateway
           schema:
             $ref: '#/definitions/main.RespError'
-      summary: used to signup a new user
+      summary: used to find a user with the given user id
       tags:
-      - signup
+      - findUser
   /like/{cmd}/{userid}/{bookid}:
     get:
-      consumes:
-      - application/json
-      description: the email id password, verifies if the email already exist in the
-        database, if it doesnt exist then it creates a new user and returns an automatically
-        generated userId
+      description: Takes the add/remove command from url and updates the like for
+        the respective user
       parameters:
       - description: userid
         in: path
@@ -135,9 +131,9 @@ paths:
           description: Bad Gateway
           schema:
             $ref: '#/definitions/main.RespError'
-      summary: used to signup a new user
+      summary: Used to update like
       tags:
-      - signup
+      - like
   /signup:
     post:
       consumes:

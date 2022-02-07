@@ -6,17 +6,14 @@
     "paths": {
         "/find/{userid}": {
             "get": {
-                "description": "the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "used to find a user with the given user id.It returns the entire user document without the hashed password",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "signup"
+                    "findUser"
                 ],
-                "summary": "used to signup a new user",
+                "summary": "used to find a user with the given user id",
                 "parameters": [
                     {
                         "type": "string",
@@ -50,17 +47,14 @@
         },
         "/like/{cmd}/{userid}/{bookid}": {
             "get": {
-                "description": "the email id password, verifies if the email already exist in the database, if it doesnt exist then it creates a new user and returns an automatically generated userId",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Takes the add/remove command from url and updates the like for the respective user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "signup"
+                    "like"
                 ],
-                "summary": "used to signup a new user",
+                "summary": "Used to update like",
                 "parameters": [
                     {
                         "type": "string",
@@ -230,7 +224,10 @@
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        ""
+                    ]
                 },
                 "password": {
                     "type": "string"
