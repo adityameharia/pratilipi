@@ -94,7 +94,7 @@ export default function Signup() {
             Sign up
           </Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool features ✌️
+            to read some interesting books ✌️
           </Text>
         </Stack>
         <Box
