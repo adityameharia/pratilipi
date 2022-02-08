@@ -1,2 +1,5 @@
 .env
-.idea
+.idea/
+gen/
+userApi/userApi
+contentApi/contentApi

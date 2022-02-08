@@ -75,7 +75,7 @@ export default function Card({ callbackLike, id, title, likes, date, story, like
                     <ModalContent>
                         <ModalHeader>{title}</ModalHeader>
                         <ModalCloseButton />
-                        <ModalBody>
+                        <ModalBody overflowX={'hidden'}>
                             {story}
                         </ModalBody>
                         <ModalFooter>
