@@ -7,6 +7,7 @@ git clone https://github.com/adityameharia/pratilipi
 
 Go to the project directory and run 
 ```bash
+docker-compose -f pratilipi.yaml build
 docker-compose -f pratilipi.yaml up
 ```
 

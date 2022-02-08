@@ -84,7 +84,6 @@ export default function Card({ callbackLike, id, title, likes, date, story, like
                             <Spacer />
                             <Button bg="white" onClick={() => {
                                 onLike()
-                                callbackLike(id, liked)
                             }}>
                                 {liked ? <Icon as={AiFillHeart} color="red.500" boxSize={6} /> : <Icon as={AiOutlineHeart} boxSize={6} />}
                             </Button>
