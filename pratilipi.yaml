@@ -39,6 +39,7 @@ services:
       - COLLECTION=user
     depends_on:
       - mongodb
+    restart: unless-stopped
   contentapi:
     build:
       context: ./contentApi
@@ -53,6 +54,7 @@ services:
       - COLLECTION=content
     depends_on:
       - mongodb
+    restart: unless-stopped
   client:
     build:
       context: ./frontend
@@ -65,4 +67,4 @@ services:
     depends_on:
       - contentapi
       - userapi
-
+    restart: unless-stopped

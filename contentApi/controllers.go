@@ -166,7 +166,7 @@ func Like(c *gin.Context) {
 		c.JSON(502, errorResp)
 		return
 	}
-	url = os.Getenv("USERURL") + "/" + c.Param("cmd") + "/" + c.Param("userid") + "/" + c.Param("bookid")
+	url = os.Getenv("USERURL") + "/like/" + c.Param("cmd") + "/" + c.Param("userid") + "/" + c.Param("bookid")
 	_, err = http.Get(url)
 	if err != nil {
 		fmt.Println(err)

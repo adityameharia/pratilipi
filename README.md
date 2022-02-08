@@ -34,6 +34,16 @@ http://localhost/
 - ### Postman Documentation
     The postman documentation can be viewed [here](https://documenter.getpostman.com/view/10792507/UVeJL59k)
 
+---
+**NOTE**
+
+- The csv file for data ingestion must be of the format 
+```csv
+title,story,date
+```
+- The first line should consists of the headers
+---
+
 ## DataBase Schema
 
 - ### ContentApi Database
