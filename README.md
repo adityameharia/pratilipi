@@ -42,6 +42,7 @@ http://localhost/
 title,story,date
 ```
 - The first line should consists of the headers
+- Sample csv can be found [here](https://raw.githubusercontent.com/adityameharia/pratilipi/main/contentApi/pratilipi.csv)
 ---
 
 ## DataBase Schema
