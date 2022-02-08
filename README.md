@@ -31,7 +31,7 @@ http://localhost/
 - ### Postman Collection
     The postman collection can be viewed [here](https://www.postman.com/collections/423fe3ecb6201513edc4)
 - ### Postman Documentation
-    The postman documentation can be viewed [here]()
+    The postman documentation can be viewed [here](https://documenter.getpostman.com/view/10792507/UVeJL59k)
 
 ## DataBase Schema
 
