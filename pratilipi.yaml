@@ -62,4 +62,7 @@ services:
         - contenturl=http://localhost:8001
     ports:
         - "80:80"
+    depends_on:
+      - contentapi
+      - userapi
 
