@@ -1,5 +1,6 @@
 .env
 .idea/
 gen/
+mongo compose/
 userApi/userApi
 contentApi/contentApi
